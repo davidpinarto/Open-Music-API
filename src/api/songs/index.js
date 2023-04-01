@@ -1,5 +1,5 @@
-const SongsHandler = require('./songs-handler');
-const songsRoutes = require('./songs-routes');
+const SongsHandler = require('./handler');
+const songsRoutes = require('./routes');
 
 module.exports = {
   name: 'open-music-songs',

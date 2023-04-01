@@ -1,5 +1,5 @@
-const AlbumsHandler = require('./albums-handler');
-const albumsRoutes = require('./albums-routes');
+const AlbumsHandler = require('./handler');
+const albumsRoutes = require('./routes');
 
 module.exports = {
   name: 'open-music-albums',
