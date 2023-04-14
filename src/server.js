@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 // mengimport dotenv dan menjalankan konfigurasinya
 require('dotenv').config();
 
@@ -31,8 +32,16 @@ const AuthenticationsService = require('./services/postgres/AuthenticationsServi
 const TokenManager = require('./tokenize/TokenManager');
 const AuthenticationsValidator = require('./validator/authentications');
 
+// Exports
+const _exports = require('./api/exports');
+const ProducerService = require('./services/rabbitmq/ProducerService');
+const ExportsValidator = require('./validator/exports');
+
 // error handling
 const ClientError = require('./exceptions/ClientError');
+
+// env config
+const config = require('./utils/env/config');
 
 const init = async () => {
   const albumsService = new AlbumsService();
@@ -41,8 +50,8 @@ const init = async () => {
   const playlistsService = new PlaylistsService();
   const authenticationsService = new AuthenticationsService();
   const server = Hapi.server({
-    port: process.env.PORT,
-    host: process.env.HOST,
+    port: config.app.port,
+    host: config.app.host,
     routes: {
       cors: {
         origin: ['*'],
@@ -110,6 +119,13 @@ const init = async () => {
         usersService,
         tokenManager: TokenManager,
         validator: AuthenticationsValidator,
+      },
+    },
+    {
+      plugin: _exports,
+      options: {
+        service: ProducerService,
+        validator: ExportsValidator,
       },
     },
   ]);
