@@ -2,18 +2,24 @@
 const autoBind = require('auto-bind');
 
 class ExportsHandler {
-  constructor(service, validator) {
+  constructor(service, validator, playlistsService) {
     this._service = service;
     this._validator = validator;
+    this._playlistsService = playlistsService;
 
     autoBind(this); // mem-bind nilai this untuk seluruh method sekaligus
   }
 
   async postExportPlaylistsHandler(request, h) {
     this._validator.validateExportPlaylistsPayload(request.payload);
+    const { id: credentialId } = request.auth.credentials;
+    const { playlistId } = request.params;
+
+    await this._playlistsService.verifyPlaylistExist(playlistId);
+    await this._playlistsService.verifyPlaylistOwner(playlistId, credentialId);
 
     const message = {
-      playlistId: request.params,
+      playlistId,
       targetEmail: request.payload.targetEmail,
     };
 
