@@ -18,7 +18,7 @@ class CoversHandler {
     await this._albumsService.verifyAlbumExist(id);
     this._validator.validateImageHeaders(cover.hapi.headers);
 
-    const filename = await this._service.writeFile(cover, cover.hapi);
+    await this._service.writeFile(cover, cover.hapi);
 
     const fileLocation = `http://${config.app.host}:${config.app.port}/albums/${id}`;
 
