@@ -2,9 +2,10 @@
 // mengimport dotenv dan menjalankan konfigurasinya
 require('dotenv').config();
 
-// hapi framework
 const Hapi = require('@hapi/hapi');
 const Jwt = require('@hapi/jwt');
+const Inert = require('@hapi/inert');
+const path = require('path');
 
 // albums
 const albums = require('./api/albums');
@@ -32,10 +33,15 @@ const AuthenticationsService = require('./services/postgres/AuthenticationsServi
 const TokenManager = require('./tokenize/TokenManager');
 const AuthenticationsValidator = require('./validator/authentications');
 
-// Exports
+// exports
 const _exports = require('./api/exports');
 const ProducerService = require('./services/rabbitmq/ProducerService');
 const ExportsValidator = require('./validator/exports');
+
+// covers
+const covers = require('./api/covers');
+const StorageService = require('./services/storage/StorageService');
+const CoversValidator = require('./validator/covers');
 
 // error handling
 const ClientError = require('./exceptions/ClientError');
@@ -49,6 +55,8 @@ const init = async () => {
   const usersService = new UsersService();
   const playlistsService = new PlaylistsService();
   const authenticationsService = new AuthenticationsService();
+  const storageService = new StorageService(path.resolve(__dirname, 'api/covers/file/images'));
+
   const server = Hapi.server({
     port: config.app.port,
     host: config.app.host,
@@ -63,6 +71,9 @@ const init = async () => {
   await server.register([
     {
       plugin: Jwt,
+    },
+    {
+      plugin: Inert,
     },
   ]);
 
@@ -127,6 +138,14 @@ const init = async () => {
         service: ProducerService,
         validator: ExportsValidator,
         playlistsService,
+      },
+    },
+    {
+      plugin: covers,
+      options: {
+        service: storageService,
+        validator: CoversValidator,
+        albumsService,
       },
     },
   ]);
