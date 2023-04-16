@@ -3,9 +3,6 @@ const config = {
     host: process.env.HOST,
     port: process.env.PORT,
   },
-  s3: {
-    bucketName: process.env.AWS_BUCKET_NAME,
-  },
   rabbitMq: {
     server: process.env.RABBITMQ_SERVER,
   },
