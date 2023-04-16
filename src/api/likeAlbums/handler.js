@@ -25,23 +25,35 @@ class LikesAlbumHandler {
     return response;
   }
 
-  async getNumberOfLikesAlbumHandler(request) {
+  async getNumberOfLikesAlbumHandler(request, h) {
     const { id: albumId } = request.params;
 
     const number = await this._service.getNumberOfLikesAlbum(albumId);
 
-    return {
+    if (number.cache) {
+      const { result } = number;
+
+      return h.response({
+        status: 'success',
+        data: {
+          likes: result,
+        },
+      }).header('X-Data-Source', 'cache');
+    }
+
+    return h.response({
       status: 'success',
       data: {
         likes: number,
       },
-    };
+    });
   }
 
   async deleteLikedAlbumHandler(request) {
     const { id: credentialId } = request.auth.credentials;
+    const { id: albumId } = request.params;
 
-    await this._service.deleteLikedAlbum(credentialId);
+    await this._service.deleteLikedAlbum(credentialId, albumId);
 
     return {
       status: 'success',
