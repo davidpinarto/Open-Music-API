@@ -189,6 +189,8 @@ const init = async () => {
         message: 'terjadi kegagalan pada server kami',
       });
       newResponse.code(500);
+      console.error(response.message);
+      // console.error(response);
       return newResponse;
     }
     // jika bukan error, lanjutkan dengan response sebelumnya (tanpa terintervensi)
