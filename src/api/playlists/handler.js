@@ -101,12 +101,32 @@ class PlaylistHandler {
     const { id: credentialId } = request.auth.credentials;
 
     await this._playlistsService.verifyPlaylistAccess(playlistId, credentialId);
-    await this._playlistsService.deleteSongsInPlaylist({ playlistId, songId });
+    await this._playlistsService.deleteSongsInPlaylist({ playlistId, songId, credentialId });
 
     return {
       status: 'success',
       message: 'Lagu berhasil dihapus',
     };
+  }
+
+  // playlistSongActivities
+
+  async getPlaylistSongActivitiesHandler(request, h) {
+    const { id: playlistId } = request.params;
+    const { id: userId } = request.auth.credentials;
+
+    await this._playlistsService.verifyPlaylistAccess(playlistId, userId);
+    const playlistActivities = await this._playlistsService
+      .getPlaylistActivities(playlistId, userId);
+
+    const response = h.response({
+      status: 'success',
+      data: {
+        playlistId,
+        activities: playlistActivities,
+      },
+    });
+    return response;
   }
 }
 

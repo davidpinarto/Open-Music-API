@@ -27,6 +27,9 @@ const playlists = require('./api/playlists');
 const PlaylistsService = require('./services/postgres/PlaylistsService');
 const PlaylistsValidator = require('./validator/playlists');
 
+// playlist activities
+const PlaylistSongActivitiesService = require('./services/postgres/PlaylistSongActivities');
+
 // collaborations
 const collaborations = require('./api/collaborations');
 const CollaborationsService = require('./services/postgres/CollaborationsService');
@@ -67,7 +70,11 @@ const init = async () => {
   const songsService = new SongsService();
   const usersService = new UsersService();
   const collaborationsService = new CollaborationsService();
-  const playlistsService = new PlaylistsService(collaborationsService);
+  const playlistSongActivitiesService = new PlaylistSongActivitiesService();
+  const playlistsService = new PlaylistsService(
+    collaborationsService,
+    playlistSongActivitiesService,
+  );
   const authenticationsService = new AuthenticationsService();
   const storageService = new StorageService(path.resolve(__dirname, 'api/covers/file/images'));
   const likesAlbumService = new LikesAlbumService(cacheService);

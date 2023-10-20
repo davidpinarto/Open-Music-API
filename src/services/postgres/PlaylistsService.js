@@ -6,9 +6,10 @@ const NotFoundError = require('../../exceptions/NotFoundError');
 const AuthorizationError = require('../../exceptions/AuthorizationError');
 
 class PlaylistsService {
-  constructor(collaborationsService) {
+  constructor(collaborationsService, playlistSongActivities) {
     this._pool = new Pool();
     this._collaborationsService = collaborationsService;
+    this._playlistSongActivities = playlistSongActivities;
   }
 
   // Playlists Service
@@ -80,7 +81,7 @@ class PlaylistsService {
   }
 
   // Playlist_Songs Service
-  async addPlaylistSongs(playlistId, songId) {
+  async addPlaylistSongs(playlistId, songId, userId) {
     const id = `playlist-songs-${nanoid(16)}`;
 
     const query = {
@@ -93,6 +94,8 @@ class PlaylistsService {
     if (!result.rows[0].id) {
       throw new InvariantError('Lagu gagal ditambahkan');
     }
+
+    await this._playlistSongActivities.addPlaylistActivities(playlistId, songId, userId, 'add');
 
     return result.rows[0].id;
   }
@@ -125,7 +128,7 @@ class PlaylistsService {
     return result.rows;
   }
 
-  async deleteSongsInPlaylist({ playlistId, songId }) {
+  async deleteSongsInPlaylist({ playlistId, songId, credentialId }) {
     const query = {
       text: 'DELETE FROM playlist_songs WHERE playlist_id = $1 AND song_id = $2 RETURNING id',
       values: [playlistId, songId],
@@ -136,6 +139,8 @@ class PlaylistsService {
     if (!result.rowCount) {
       throw new InvariantError('Lagu gagal dihapus. Id tidak ditemukan');
     }
+
+    await this._playlistSongActivities.deletePlaylistActivities(playlistId, songId, credentialId, 'delete');
   }
 
   async verifySongId(id) {
@@ -174,6 +179,12 @@ class PlaylistsService {
         throw error;
       }
     }
+  }
+
+  async getPlaylistActivities(playlistId) {
+    const playlistActivities = await this._playlistSongActivities.getPlaylistActivities(playlistId);
+
+    return playlistActivities;
   }
 }
 
