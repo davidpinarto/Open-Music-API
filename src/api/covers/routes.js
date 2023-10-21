@@ -19,7 +19,7 @@ const routes = (handler) => [
     path: '/albums/{id}/{param*}',
     handler: {
       directory: {
-        path: path.resolve(__dirname, 'file'),
+        path: path.resolve(__dirname, 'file/images'),
       },
     },
   },
