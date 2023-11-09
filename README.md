@@ -11,7 +11,7 @@ this is an api application to serve requests for managing albums, songs, playlis
 
 ## Documentation
 Please visit this website for how to use this API:
-[Open-Music-API-Documentation](https://openmusic-api.dapi.my.id)
+[Open-Music-API-Documentation](https://openmusic-api-docs.dapi.my.id)
 
 ## How to deploy Open-Music-API
 > [!NOTE]
